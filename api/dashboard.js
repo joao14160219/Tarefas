@@ -303,6 +303,29 @@ async function updateTask(body, session) {
       status: "pending",
       completed_at: null,
     };
+  } else if (action === "edit") {
+    const title = String(body.title || "").trim();
+    const description = String(body.description || "").trim();
+    const dueDate = String(body.due_date || "").trim();
+
+    if (!title || !dueDate) {
+      const error = new Error("title and due_date are required");
+      error.status = 400;
+      throw error;
+    }
+
+    const parsedDueDate = new Date(dueDate);
+    if (Number.isNaN(parsedDueDate.getTime())) {
+      const error = new Error("Invalid due_date");
+      error.status = 400;
+      throw error;
+    }
+
+    patch = {
+      title,
+      description,
+      due_date: parsedDueDate.toISOString(),
+    };
   } else {
     const error = new Error("Unsupported action");
     error.status = 400;
