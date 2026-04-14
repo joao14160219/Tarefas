@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JOFA | Checklist de Tarefas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3efe6;
+  --ink:#161515;
+  --muted:#6d655d;
+  --card:#fffaf2;
+  --line:rgba(22,21,21,.12);
+  --shadow:0 24px 60px rgba(41,31,18,.12);
+  --accent:#ca5a2e;
+  --accent-2:#f3b764;
+  --ok:#2d8c57;
+  --warn:#b96f1b;
+  --danger:#b3382c;
+  --cold:#325a9b;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(202,90,46,.18), transparent 28%),
+    radial-gradient(circle at right center, rgba(243,183,100,.22), transparent 24%),
+    linear-gradient(180deg, #f7f2ea 0%, var(--bg) 100%);
+  font-family:"Manrope",sans-serif;
+}
+.page{max-width:1320px;margin:0 auto;padding:28px 18px 64px}
+.hero{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:18px;
+  align-items:stretch;
+  margin-bottom:18px;
+}
+.panel{
+  background:rgba(255,250,242,.9);
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow:var(--shadow);
+}
+.hero-copy{
+  padding:22px 24px;
+  position:relative;
+  overflow:hidden;
+}
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  color:var(--muted);
+  font:600 12px/1 "IBM Plex Mono",monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.eyebrow::before{
+  content:"";
+  width:28px;
+  height:1px;
+  background:currentColor;
+}
+h1{
+  margin:12px 0 10px;
+  font-family:"Anton",sans-serif;
+  font-size:clamp(2rem,4vw,3rem);
+  line-height:1;
+  letter-spacing:.04em;
+  max-width:none;
+}
+.hero-text{
+  max-width:70ch;
+  font-size:14px;
+  line-height:1.6;
+  color:#2e2925;
+}
+.hero-points{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:16px;
+}
+.chip{
+  display:flex;
+  align-items:center;
+  min-height:78px;
+  border:1px solid rgba(22,21,21,.08);
+  border-radius:20px;
+  padding:12px 14px;
+  background:#fff;
+  font:600 11px/1.5 "IBM Plex Mono",monospace;
+  letter-spacing:.03em;
+  color:#342d28;
+}
+.hero-proof{
+  padding:22px;
+  background:
+    linear-gradient(145deg, rgba(22,21,21,.95), rgba(56,41,29,.96)),
+    #161515;
+  color:#f8efe6;
+  position:relative;
+  overflow:hidden;
+}
+.hero-proof::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(120deg, transparent 0 34%, rgba(243,183,100,.14) 45%, transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 36px);
+  pointer-events:none;
+}
+.proof-box{position:relative;z-index:1}
+.proof-label{
+  color:#f3b764;
+  font:600 12px/1 "IBM Plex Mono",monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+}
+.proof-title{
+  margin:12px 0 10px;
+  font-family:"Anton",sans-serif;
+  font-size:clamp(2rem,4vw,3rem);
+  line-height:1;
+  letter-spacing:.04em;
+  max-width:8ch;
+}
+.proof-text{
+  color:rgba(248,239,230,.82);
+  font-size:14px;
+  line-height:1.6;
+  max-width:34ch;
+}
+.proof-note{
+  margin-top:16px;
+  padding:12px 14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  color:#fff5e7;
+  font-size:13px;
+}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+.metric{
+  padding:20px;
+}
+.metric-label{
+  color:var(--muted);
+  font:600 11px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.metric-value{
+  font-family:"Anton",sans-serif;
+  font-size:clamp(2.1rem,5vw,3rem);
+  line-height:1;
+  letter-spacing:.03em;
+}
+.metric-note{
+  margin-top:10px;
+  font-size:14px;
+  color:#473f39;
+}
+.content{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:18px;
+}
+.form-panel{
+  padding:24px;
+  align-self:start;
+  position:sticky;
+  top:18px;
+}
+.panel-title{
+  margin:0 0 6px;
+  font-family:"Anton",sans-serif;
+  font-size:1.7rem;
+  letter-spacing:.04em;
+}
+.panel-subtitle{
+  margin:0 0 22px;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+}
+.form-grid{
+  display:grid;
+  gap:14px;
+}
+label{
+  display:grid;
+  gap:8px;
+  font-size:14px;
+  font-weight:700;
+}
+input,textarea,select{
+  width:100%;
+  border:1px solid rgba(22,21,21,.14);
+  border-radius:16px;
+  background:#fff;
+  padding:14px 15px;
+  font:500 14px/1.4 "Manrope",sans-serif;
+  color:var(--ink);
+}
+textarea{
+  min-height:110px;
+  resize:vertical;
+}
+input:focus,textarea:focus,select:focus{
+  outline:2px solid rgba(202,90,46,.18);
+  border-color:rgba(202,90,46,.44);
+}
+.button-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+button{
+  border:0;
+  border-radius:16px;
+  cursor:pointer;
+  padding:14px 18px;
+  font:700 12px/1 "IBM Plex Mono",monospace;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.btn-primary{
+  background:linear-gradient(135deg, var(--accent), #da7c39);
+  color:#fffaf4;
+  box-shadow:0 14px 30px rgba(202,90,46,.24);
+}
+.btn-secondary{
+  background:#fff;
+  color:var(--ink);
+  border:1px solid var(--line);
+}
+.status-box{
+  min-height:22px;
+  color:var(--muted);
+  font-size:14px;
+}
+.status-box.error{color:var(--danger)}
+.status-box.success{color:var(--ok)}
+.board{
+  display:grid;
+  gap:18px;
+}
+.toolbar{
+  padding:22px;
+}
+.toolbar-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.filters{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.filter{
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  padding:10px 14px;
+  font:700 12px/1 "IBM Plex Mono",monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  cursor:pointer;
+  color:#4c433d;
+}
+.filter.active{
+  background:#1b1816;
+  color:#fff;
+  border-color:#1b1816;
+}
+.list-panel{
+  padding:22px;
+}
+.list-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:14px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+.list-note{
+  color:var(--muted);
+  font-size:14px;
+}
+.task-list{
+  display:grid;
+  gap:12px;
+}
+.task{
+  border:1px solid rgba(22,21,21,.1);
+  border-radius:24px;
+  background:linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,248,239,.82));
+  padding:18px;
+}
+.task-top{
+  display:flex;
+  justify-content:space-between;
+  gap:16px;
+  align-items:flex-start;
+  margin-bottom:14px;
+}
+.task-title{
+  margin:0;
+  font-size:21px;
+  line-height:1.3;
+}
+.task-desc{
+  margin:8px 0 0;
+  color:#4c443e;
+  font-size:14px;
+  line-height:1.7;
+}
+.badges{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  padding:8px 10px;
+  font:700 11px/1 "IBM Plex Mono",monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.badge.pending{background:rgba(50,90,155,.12);color:var(--cold)}
+.badge.overdue{background:rgba(179,56,44,.12);color:var(--danger)}
+.badge.done{background:rgba(45,140,87,.12);color:var(--ok)}
+.task-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.cell{
+  padding:12px;
+  border-radius:18px;
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(22,21,21,.08);
+}
+.cell-label{
+  color:var(--muted);
+  font:600 10px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.cell-value{
+  font-size:14px;
+  line-height:1.6;
+  color:#2b2520;
+  word-break:break-word;
+}
+.task-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:14px;
+}
+.task-btn{
+  padding:11px 14px;
+  border-radius:14px;
+  font:700 11px/1 "IBM Plex Mono",monospace;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.task-btn.complete{
+  background:#1f7d4d;
+  color:#fff;
+}
+.task-btn.reopen{
+  background:#fff;
+  color:var(--ink);
+  border:1px solid var(--line);
+}
+.empty{
+  border:1px dashed rgba(22,21,21,.16);
+  border-radius:22px;
+  padding:24px;
+  color:var(--muted);
+  background:rgba(255,255,255,.4);
+  text-align:center;
+}
+.timeline{
+  padding:22px;
+}
+.timeline-list{
+  display:grid;
+  gap:10px;
+}
+.timeline-item{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px 0;
+  border-bottom:1px solid rgba(22,21,21,.08);
+}
+.timeline-item:last-child{border-bottom:0}
+.timeline-dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  margin-top:5px;
+  background:var(--accent);
+  box-shadow:0 0 0 5px rgba(202,90,46,.12);
+}
+.timeline-title{
+  font-size:15px;
+  font-weight:800;
+}
+.timeline-meta{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.6;
+}
+.footer-note{
+  margin-top:12px;
+  color:var(--muted);
+  font-size:13px;
+}
+@media (max-width:1100px){
+  .hero,.content{grid-template-columns:1fr}
+  .form-panel{position:static}
+}
+@media (max-width:780px){
+  .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hero-points{grid-template-columns:1fr}
+}
+@media (max-width:580px){
+  .page{padding:20px 14px 42px}
+  .metrics{grid-template-columns:1fr}
+  .hero-copy,.hero-proof,.form-panel,.toolbar,.list-panel,.timeline{padding:18px}
+  .task-grid{grid-template-columns:1fr}
+  .task-top{flex-direction:column}
+}
+</style>
+</head>
+<body>
+  <div class="page">
+    <section class="hero">
+      <div class="panel hero-copy">
+        <div class="eyebrow">Checklist com prova</div>
+        <h1>Tarefas com prazo claro e atraso comprovado.</h1>
+        <p class="hero-text">
+          Cadastre a tarefa, escolha o responsavel e acompanhe o prazo. Se vencer sem conclusao, o painel destaca na hora. Se concluir, o horario fica registrado.
+        </p>
+        <div class="hero-points">
+          <span class="chip">Criada com data e hora.</span>
+          <span class="chip">Prazo salvo no banco.</span>
+          <span class="chip">Conclusao e atraso ficam visiveis.</span>
+        </div>
+      </div>
+      <div class="panel hero-proof">
+        <div class="proof-box">
+          <div class="proof-label">Uso pratico</div>
+          <div class="proof-title">Se atrasar, o painel mostra.</div>
+          <p class="proof-text">
+            Cada item exibe criacao, prazo, status atual e momento da conclusao. Se passar da data sem finalizar, entra como atrasado automaticamente.
+          </p>
+          <div class="proof-note">
+            Use observacoes para registrar o combinado da reuniao ou entrega.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="metrics">
+      <div class="panel metric">
+        <div class="metric-label">Total</div>
+        <div class="metric-value" id="metricTotal">0</div>
+        <div class="metric-note">Tarefas cadastradas</div>
+      </div>
+      <div class="panel metric">
+        <div class="metric-label">Pendentes</div>
+        <div class="metric-value" id="metricPending">0</div>
+        <div class="metric-note">Ainda sem conclusao</div>
+      </div>
+      <div class="panel metric">
+        <div class="metric-label">Atrasadas</div>
+        <div class="metric-value" id="metricOverdue">0</div>
+        <div class="metric-note">Passaram do prazo</div>
+      </div>
+      <div class="panel metric">
+        <div class="metric-label">Concluidas</div>
+        <div class="metric-value" id="metricCompleted">0</div>
+        <div class="metric-note">Finalizadas com registro</div>
+      </div>
+    </section>
+
+    <section class="content">
+      <aside class="panel form-panel">
+        <h2 class="panel-title">Nova tarefa</h2>
+        <p class="panel-subtitle">
+          Preencha os dados abaixo para salvar no Supabase. O ideal e cadastrar cada combinacao com titulo claro, prazo e nome do responsavel.
+        </p>
+
+        <form id="taskForm" class="form-grid">
+          <label>
+            Titulo da tarefa
+            <input id="titleInput" name="title" type="text" maxlength="140" placeholder="Ex.: Enviar contrato assinado" required>
+          </label>
+
+          <label>
+            Responsavel
+            <select id="ownerInput" name="owner_name" required>
+              <option value="João Pedro">João Pedro</option>
+              <option value="Rafael Palma">Rafael Palma</option>
+            </select>
+          </label>
+
+          <label>
+            Prazo
+            <input id="dueDateInput" name="due_date" type="datetime-local" required>
+          </label>
+
+          <label>
+            Observacoes
+            <textarea id="descriptionInput" name="description" maxlength="600" placeholder="Ex.: combinado em reuniao de segunda, precisava ser entregue ate o fim do dia."></textarea>
+          </label>
+
+          <div class="button-row">
+            <button class="btn-primary" id="saveTaskBtn" type="submit">Salvar tarefa</button>
+            <button class="btn-secondary" id="refreshBtn" type="button">Atualizar lista</button>
+          </div>
+          <div class="status-box" id="formStatus"></div>
+        </form>
+      </aside>
+
+      <div class="board">
+        <section class="panel toolbar">
+          <div class="toolbar-row">
+            <div>
+              <h2 class="panel-title" style="margin-bottom:8px;">Painel de acompanhamento</h2>
+              <div class="list-note" id="lastSync">Aguardando leitura inicial...</div>
+            </div>
+            <div class="filters" id="filters">
+              <button class="filter active" data-filter="all" type="button">Todas</button>
+              <button class="filter" data-filter="pending" type="button">Pendentes</button>
+              <button class="filter" data-filter="overdue" type="button">Atrasadas</button>
+              <button class="filter" data-filter="completed" type="button">Concluidas</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel list-panel">
+          <div class="list-head">
+            <div>
+              <h2 class="panel-title" style="margin-bottom:8px;">Tarefas</h2>
+              <div class="list-note" id="listSummary">Carregando tarefas...</div>
+            </div>
+          </div>
+          <div class="task-list" id="taskList"></div>
+        </section>
+
+        <section class="panel timeline">
+          <div class="list-head">
+            <div>
+              <h2 class="panel-title" style="margin-bottom:8px;">Linha do tempo</h2>
+              <div class="list-note">Ultimos registros criados ou concluidos.</div>
+            </div>
+          </div>
+          <div class="timeline-list" id="timelineList"></div>
+          <div class="footer-note">
+            O historico mostra quando cada tarefa entrou no sistema e quando foi marcada como concluida.
+          </div>
+        </section>
+      </div>
+    </section>
+  </div>
+
+<script>
+const taskForm = document.getElementById("taskForm");
+const titleInput = document.getElementById("titleInput");
+const ownerInput = document.getElementById("ownerInput");
+const dueDateInput = document.getElementById("dueDateInput");
+const descriptionInput = document.getElementById("descriptionInput");
+const formStatus = document.getElementById("formStatus");
+const saveTaskBtn = document.getElementById("saveTaskBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const taskList = document.getElementById("taskList");
+const timelineList = document.getElementById("timelineList");
+const listSummary = document.getElementById("listSummary");
+const lastSync = document.getElementById("lastSync");
+const filtersEl = document.getElementById("filters");
+const metricTotal = document.getElementById("metricTotal");
+const metricPending = document.getElementById("metricPending");
+const metricOverdue = document.getElementById("metricOverdue");
+const metricCompleted = document.getElementById("metricCompleted");
+
+let currentFilter = "all";
+let currentTasks = [];
+
+function setDefaultDueDate() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60);
+  dueDateInput.value = now.toISOString().slice(0, 16);
+}
+
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatDate(value) {
+  if (!value) return "--";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "--";
+  return new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short"
+  }).format(date);
+}
+
+function statusLabel(task) {
+  if (task.is_completed) return "Concluida";
+  if (task.is_overdue) return "Atrasada";
+  return "Pendente";
+}
+
+function statusClass(task) {
+  if (task.is_completed) return "done";
+  if (task.is_overdue) return "overdue";
+  return "pending";
+}
+
+function relativeInfo(task) {
+  if (task.is_completed && task.completed_at) {
+    return "Concluida em " + formatDate(task.completed_at);
+  }
+  if (task.is_overdue) {
+    return "Prazo expirado em " + formatDate(task.due_date);
+  }
+  return "Prazo em " + formatDate(task.due_date);
+}
+
+function updateMetrics(summary) {
+  metricTotal.textContent = summary.total || 0;
+  metricPending.textContent = summary.pending || 0;
+  metricOverdue.textContent = summary.overdue || 0;
+  metricCompleted.textContent = summary.completed || 0;
+}
+
+function filteredTasks(tasks) {
+  if (currentFilter === "pending") return tasks.filter((task) => !task.is_completed && !task.is_overdue);
+  if (currentFilter === "overdue") return tasks.filter((task) => task.is_overdue);
+  if (currentFilter === "completed") return tasks.filter((task) => task.is_completed);
+  return tasks;
+}
+
+function renderTasks(tasks) {
+  const visibleTasks = filteredTasks(tasks);
+  if (!visibleTasks.length) {
+    taskList.innerHTML = '<div class="empty">Nenhuma tarefa encontrada nesse filtro.</div>';
+    return;
+  }
+
+  taskList.innerHTML = visibleTasks.map((task) => {
+    const button = task.is_completed
+      ? `<button class="task-btn reopen" type="button" data-action="reopen" data-id="${task.id}">Reabrir</button>`
+      : `<button class="task-btn complete" type="button" data-action="complete" data-id="${task.id}">Marcar concluida</button>`;
+
+    return `
+      <article class="task">
+        <div class="task-top">
+          <div>
+            <h3 class="task-title">${escapeHtml(task.title)}</h3>
+            <p class="task-desc">${escapeHtml(task.description || "Sem observacoes registradas.")}</p>
+            <div class="badges">
+              <span class="badge ${statusClass(task)}">${statusLabel(task)}</span>
+              <span class="badge pending">${escapeHtml(task.owner_name || "Sem responsavel")}</span>
+            </div>
+          </div>
+          <div class="list-note">${relativeInfo(task)}</div>
+        </div>
+        <div class="task-grid">
+          <div class="cell">
+            <div class="cell-label">Criada em</div>
+            <div class="cell-value">${formatDate(task.created_at)}</div>
+          </div>
+          <div class="cell">
+            <div class="cell-label">Prazo final</div>
+            <div class="cell-value">${formatDate(task.due_date)}</div>
+          </div>
+          <div class="cell">
+            <div class="cell-label">Concluida em</div>
+            <div class="cell-value">${formatDate(task.completed_at)}</div>
+          </div>
+          <div class="cell">
+            <div class="cell-label">Status atual</div>
+            <div class="cell-value">${statusLabel(task)}</div>
+          </div>
+        </div>
+        <div class="task-actions">
+          ${button}
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function renderTimeline(items) {
+  if (!items.length) {
+    timelineList.innerHTML = '<div class="empty">Ainda nao ha movimentacoes para mostrar.</div>';
+    return;
+  }
+
+  timelineList.innerHTML = items.map((item) => `
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div>
+        <div class="timeline-title">${escapeHtml(item.title)}</div>
+        <div class="timeline-meta">${escapeHtml(item.description)}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function applyPayload(payload) {
+  currentTasks = payload.tasks || [];
+  updateMetrics(payload.summary || {});
+  renderTasks(currentTasks);
+  renderTimeline(payload.timeline || []);
+
+  const totalVisible = filteredTasks(currentTasks).length;
+  listSummary.textContent = `${totalVisible} tarefa(s) exibida(s) no filtro atual.`;
+  lastSync.textContent = `Ultima sincronizacao: ${formatDate(new Date().toISOString())}`;
+}
+
+async function fetchDashboard() {
+  listSummary.textContent = "Atualizando tarefas...";
+  const response = await fetch("/api/dashboard");
+  const payload = await response.json();
+
+  if (!response.ok) {
+    const message = payload && payload.error ? payload.error : "Nao foi possivel carregar as tarefas.";
+    taskList.innerHTML = `<div class="empty">${escapeHtml(message)}</div>`;
+    timelineList.innerHTML = '<div class="empty">Sem historico disponivel.</div>';
+    listSummary.textContent = "Falha ao atualizar a lista.";
+    return;
+  }
+
+  applyPayload(payload);
+}
+
+async function submitTask(event) {
+  event.preventDefault();
+  formStatus.textContent = "";
+  formStatus.className = "status-box";
+
+  const body = {
+    title: titleInput.value.trim(),
+    owner_name: ownerInput.value.trim(),
+    due_date: dueDateInput.value,
+    description: descriptionInput.value.trim()
+  };
+
+  if (!body.title || !body.owner_name || !body.due_date) {
+    formStatus.textContent = "Preencha titulo, responsavel e prazo.";
+    formStatus.classList.add("error");
+    return;
+  }
+
+  saveTaskBtn.disabled = true;
+  saveTaskBtn.textContent = "Salvando...";
+
+  try {
+    const response = await fetch("/api/dashboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload.error || "Nao foi possivel salvar a tarefa.");
+    }
+
+    formStatus.textContent = "Tarefa salva com sucesso.";
+    formStatus.classList.add("success");
+    taskForm.reset();
+    setDefaultDueDate();
+    applyPayload(payload);
+  } catch (error) {
+    formStatus.textContent = error.message || "Erro ao salvar a tarefa.";
+    formStatus.classList.add("error");
+  } finally {
+    saveTaskBtn.disabled = false;
+    saveTaskBtn.textContent = "Salvar tarefa";
+  }
+}
+
+async function updateTaskStatus(id, action) {
+  const response = await fetch("/api/dashboard", {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, action })
+  });
+  const payload = await response.json();
+
+  if (!response.ok) {
+    throw new Error(payload.error || "Nao foi possivel atualizar a tarefa.");
+  }
+
+  applyPayload(payload);
+}
+
+taskForm.addEventListener("submit", submitTask);
+refreshBtn.addEventListener("click", fetchDashboard);
+
+filtersEl.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-filter]");
+  if (!button) return;
+
+  currentFilter = button.dataset.filter;
+  [...filtersEl.querySelectorAll("[data-filter]")].forEach((item) => item.classList.remove("active"));
+  button.classList.add("active");
+  renderTasks(currentTasks);
+  listSummary.textContent = `${filteredTasks(currentTasks).length} tarefa(s) exibida(s) no filtro atual.`;
+});
+
+taskList.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-action]");
+  if (!button) return;
+
+  button.disabled = true;
+  try {
+    await updateTaskStatus(button.dataset.id, button.dataset.action);
+  } catch (error) {
+    button.disabled = false;
+    alert(error.message || "Nao foi possivel atualizar a tarefa.");
+  }
+});
+
+setDefaultDueDate();
+fetchDashboard();
+</script>
+</body>
+</html>
