@@ -95,6 +95,10 @@ function normalizeTask(row, session) {
   const dueDate = row.due_date ? new Date(row.due_date).getTime() : null;
   const isCompleted = row.status === "completed";
   const isOverdue = !isCompleted && dueDate !== null && !Number.isNaN(dueDate) && dueDate < now;
+  const canEdit = session ? row.creator_user_key === session.key : false;
+  const canToggleComplete = session
+    ? row.creator_user_key === session.key || row.owner_user_key === session.key
+    : false;
 
   return {
     id: row.id,
@@ -102,13 +106,16 @@ function normalizeTask(row, session) {
     description: row.description || "",
     owner_name: row.owner_name || "",
     owner_user_key: row.owner_user_key || "",
+    creator_name: row.creator_name || row.owner_name || "",
+    creator_user_key: row.creator_user_key || row.owner_user_key || "",
     status: row.status || "pending",
     created_at: row.created_at || null,
     due_date: row.due_date || null,
     completed_at: row.completed_at || null,
     is_completed: isCompleted,
     is_overdue: isOverdue,
-    can_edit: session ? row.owner_user_key === session.key : false,
+    can_edit: canEdit,
+    can_toggle_complete: canToggleComplete,
   };
 }
 
@@ -220,14 +227,14 @@ async function supabaseRequest(path, options = {}) {
 
 async function fetchTasks() {
   const data = await supabaseRequest(
-    `${TABLE_NAME}?select=id,title,description,owner_name,owner_user_key,status,created_at,due_date,completed_at&order=created_at.desc`
+    `${TABLE_NAME}?select=id,title,description,owner_name,owner_user_key,creator_name,creator_user_key,status,created_at,due_date,completed_at&order=created_at.desc`
   );
   return Array.isArray(data) ? data : [];
 }
 
 async function fetchTaskById(id) {
   const data = await supabaseRequest(
-    `${TABLE_NAME}?select=id,owner_user_key&id=eq.${encodeURIComponent(id)}`
+    `${TABLE_NAME}?select=id,owner_user_key,creator_user_key&id=eq.${encodeURIComponent(id)}`
   );
   return Array.isArray(data) ? data[0] || null : null;
 }
@@ -236,9 +243,11 @@ async function createTask(body, session) {
   const title = String(body.title || "").trim();
   const description = String(body.description || "").trim();
   const dueDate = String(body.due_date || "").trim();
+  const assignedUserKey = String(body.owner_user_key || "").trim();
+  const assignedName = String(body.owner_name || "").trim();
 
-  if (!title || !dueDate) {
-    const error = new Error("title and due_date are required");
+  if (!title || !dueDate || !assignedUserKey || !assignedName) {
+    const error = new Error("title, due_date, owner_user_key and owner_name are required");
     error.status = 400;
     throw error;
   }
@@ -259,8 +268,10 @@ async function createTask(body, session) {
     body: JSON.stringify([
       {
         title,
-        owner_name: session.name,
-        owner_user_key: session.key,
+        owner_name: assignedName,
+        owner_user_key: assignedUserKey,
+        creator_name: session.name,
+        creator_user_key: session.key,
         description,
         due_date: parsedDueDate.toISOString(),
         status: "pending",
@@ -286,7 +297,14 @@ async function updateTask(body, session) {
     throw error;
   }
 
-  if (task.owner_user_key !== session.key) {
+  if (action === "complete" || action === "reopen") {
+    const canToggle = task.creator_user_key === session.key || task.owner_user_key === session.key;
+    if (!canToggle) {
+      const error = new Error("Voce so pode alterar o status de tarefas suas ou designadas para voce");
+      error.status = 403;
+      throw error;
+    }
+  } else if (task.creator_user_key !== session.key) {
     const error = new Error("Voce so pode editar as tarefas que criou");
     error.status = 403;
     throw error;
