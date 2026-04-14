@@ -1,4 +1,7 @@
+const crypto = require("crypto");
+
 const TABLE_NAME = "task_checklist";
+const SESSION_COOKIE = "jofa_session";
 
 function json(res, status, body) {
   res.statusCode = status;
@@ -31,7 +34,63 @@ function parseBody(req) {
   });
 }
 
-function normalizeTask(row) {
+function parseCookies(req) {
+  const cookieHeader = req.headers.cookie || "";
+  return cookieHeader.split(";").reduce((acc, part) => {
+    const trimmed = part.trim();
+    if (!trimmed) return acc;
+    const separator = trimmed.indexOf("=");
+    const key = separator >= 0 ? trimmed.slice(0, separator) : trimmed;
+    const value = separator >= 0 ? trimmed.slice(separator + 1) : "";
+    acc[key] = decodeURIComponent(value);
+    return acc;
+  }, {});
+}
+
+function base64UrlDecode(value) {
+  const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+  return Buffer.from(padded, "base64").toString("utf8");
+}
+
+function readSession(req) {
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!sessionSecret) {
+    const error = new Error("Missing SESSION_SECRET in Vercel environment variables");
+    error.status = 500;
+    throw error;
+  }
+
+  const cookies = parseCookies(req);
+  const raw = cookies[SESSION_COOKIE];
+  if (!raw) return null;
+
+  const [encodedPayload, signature] = raw.split(".");
+  if (!encodedPayload || !signature) return null;
+
+  const expectedSignature = crypto
+    .createHmac("sha256", sessionSecret)
+    .update(encodedPayload)
+    .digest("base64url");
+
+  if (signature.length !== expectedSignature.length) {
+    return null;
+  }
+
+  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(base64UrlDecode(encodedPayload));
+    if (!payload?.key || !payload?.name) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeTask(row, session) {
   const now = Date.now();
   const dueDate = row.due_date ? new Date(row.due_date).getTime() : null;
   const isCompleted = row.status === "completed";
@@ -42,17 +101,19 @@ function normalizeTask(row) {
     title: row.title || "",
     description: row.description || "",
     owner_name: row.owner_name || "",
+    owner_user_key: row.owner_user_key || "",
     status: row.status || "pending",
     created_at: row.created_at || null,
     due_date: row.due_date || null,
     completed_at: row.completed_at || null,
     is_completed: isCompleted,
     is_overdue: isOverdue,
+    can_edit: session ? row.owner_user_key === session.key : false,
   };
 }
 
-function buildPayload(rows) {
-  const tasks = rows.map(normalizeTask);
+function buildPayload(rows, session) {
+  const tasks = rows.map((row) => normalizeTask(row, session));
   const summary = tasks.reduce((acc, task) => {
     acc.total += 1;
     if (task.is_completed) {
@@ -89,7 +150,12 @@ function buildPayload(rows) {
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, 10);
 
-  return { summary, tasks, timeline };
+  return {
+    summary,
+    tasks,
+    timeline,
+    currentUser: session ? { key: session.key, name: session.name } : null,
+  };
 }
 
 function formatTimelineDate(value) {
@@ -154,19 +220,25 @@ async function supabaseRequest(path, options = {}) {
 
 async function fetchTasks() {
   const data = await supabaseRequest(
-    `${TABLE_NAME}?select=id,title,description,owner_name,status,created_at,due_date,completed_at&order=created_at.desc`
+    `${TABLE_NAME}?select=id,title,description,owner_name,owner_user_key,status,created_at,due_date,completed_at&order=created_at.desc`
   );
   return Array.isArray(data) ? data : [];
 }
 
-async function createTask(body) {
+async function fetchTaskById(id) {
+  const data = await supabaseRequest(
+    `${TABLE_NAME}?select=id,owner_user_key&id=eq.${encodeURIComponent(id)}`
+  );
+  return Array.isArray(data) ? data[0] || null : null;
+}
+
+async function createTask(body, session) {
   const title = String(body.title || "").trim();
-  const ownerName = String(body.owner_name || "").trim();
   const description = String(body.description || "").trim();
   const dueDate = String(body.due_date || "").trim();
 
-  if (!title || !ownerName || !dueDate) {
-    const error = new Error("title, owner_name and due_date are required");
+  if (!title || !dueDate) {
+    const error = new Error("title and due_date are required");
     error.status = 400;
     throw error;
   }
@@ -187,7 +259,8 @@ async function createTask(body) {
     body: JSON.stringify([
       {
         title,
-        owner_name: ownerName,
+        owner_name: session.name,
+        owner_user_key: session.key,
         description,
         due_date: parsedDueDate.toISOString(),
         status: "pending",
@@ -196,13 +269,26 @@ async function createTask(body) {
   });
 }
 
-async function updateTask(body) {
+async function updateTask(body, session) {
   const id = String(body.id || "").trim();
   const action = String(body.action || "").trim();
 
   if (!id || !action) {
     const error = new Error("id and action are required");
     error.status = 400;
+    throw error;
+  }
+
+  const task = await fetchTaskById(id);
+  if (!task) {
+    const error = new Error("Task not found");
+    error.status = 404;
+    throw error;
+  }
+
+  if (task.owner_user_key !== session.key) {
+    const error = new Error("Voce so pode editar as tarefas que criou");
+    error.status = 403;
     throw error;
   }
 
@@ -235,23 +321,29 @@ async function updateTask(body) {
 
 module.exports = async (req, res) => {
   try {
+    const session = readSession(req);
+
+    if (!session) {
+      return json(res, 401, { error: "Sessao expirada. Faca login novamente." });
+    }
+
     if (req.method === "GET") {
       const rows = await fetchTasks();
-      return json(res, 200, buildPayload(rows));
+      return json(res, 200, buildPayload(rows, session));
     }
 
     if (req.method === "POST") {
       const body = await parseBody(req);
-      await createTask(body);
+      await createTask(body, session);
       const rows = await fetchTasks();
-      return json(res, 200, buildPayload(rows));
+      return json(res, 200, buildPayload(rows, session));
     }
 
     if (req.method === "PATCH") {
       const body = await parseBody(req);
-      await updateTask(body);
+      await updateTask(body, session);
       const rows = await fetchTasks();
-      return json(res, 200, buildPayload(rows));
+      return json(res, 200, buildPayload(rows, session));
     }
 
     res.setHeader("Allow", "GET, POST, PATCH");
@@ -263,4 +355,3 @@ module.exports = async (req, res) => {
     });
   }
 };
-
