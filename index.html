@@ -12,13 +12,10 @@
   --bg:#f3efe6;
   --ink:#161515;
   --muted:#6d655d;
-  --card:#fffaf2;
   --line:rgba(22,21,21,.12);
   --shadow:0 24px 60px rgba(41,31,18,.12);
   --accent:#ca5a2e;
-  --accent-2:#f3b764;
   --ok:#2d8c57;
-  --warn:#b96f1b;
   --danger:#b3382c;
   --cold:#325a9b;
 }
@@ -33,24 +30,22 @@ body{
     linear-gradient(180deg, #f7f2ea 0%, var(--bg) 100%);
   font-family:"Manrope",sans-serif;
 }
-.page{max-width:1320px;margin:0 auto;padding:28px 18px 64px}
-.hero{
+.hidden{display:none !important}
+.auth-shell{
+  min-height:100vh;
   display:grid;
-  grid-template-columns:1.15fr .85fr;
-  gap:18px;
-  align-items:stretch;
-  margin-bottom:18px;
+  place-items:center;
+  padding:20px;
 }
-.panel{
-  background:rgba(255,250,242,.9);
+.auth-card,.panel{
+  background:rgba(255,250,242,.93);
   border:1px solid var(--line);
   border-radius:28px;
   box-shadow:var(--shadow);
 }
-.hero-copy{
-  padding:22px 24px;
-  position:relative;
-  overflow:hidden;
+.auth-card{
+  width:min(480px,100%);
+  padding:28px;
 }
 .eyebrow{
   display:inline-flex;
@@ -67,139 +62,23 @@ body{
   height:1px;
   background:currentColor;
 }
-h1{
-  margin:12px 0 10px;
+h1,h2,h3{margin:0}
+.auth-title,.hero-title{
+  margin-top:14px;
   font-family:"Anton",sans-serif;
-  font-size:clamp(2rem,4vw,3rem);
   line-height:1;
   letter-spacing:.04em;
-  max-width:none;
 }
-.hero-text{
-  max-width:70ch;
-  font-size:14px;
-  line-height:1.6;
-  color:#2e2925;
-}
-.hero-points{
-  display:grid;
-  grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:10px;
-  margin-top:16px;
-}
-.chip{
-  display:flex;
-  align-items:center;
-  min-height:78px;
-  border:1px solid rgba(22,21,21,.08);
-  border-radius:20px;
-  padding:12px 14px;
-  background:#fff;
-  font:600 11px/1.5 "IBM Plex Mono",monospace;
-  letter-spacing:.03em;
-  color:#342d28;
-}
-.hero-proof{
-  padding:22px;
-  background:
-    linear-gradient(145deg, rgba(22,21,21,.95), rgba(56,41,29,.96)),
-    #161515;
-  color:#f8efe6;
-  position:relative;
-  overflow:hidden;
-}
-.hero-proof::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(120deg, transparent 0 34%, rgba(243,183,100,.14) 45%, transparent 60%),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 36px);
-  pointer-events:none;
-}
-.proof-box{position:relative;z-index:1}
-.proof-label{
-  color:#f3b764;
-  font:600 12px/1 "IBM Plex Mono",monospace;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-}
-.proof-title{
-  margin:12px 0 10px;
-  font-family:"Anton",sans-serif;
-  font-size:clamp(2rem,4vw,3rem);
-  line-height:1;
-  letter-spacing:.04em;
-  max-width:8ch;
-}
-.proof-text{
-  color:rgba(248,239,230,.82);
-  font-size:14px;
-  line-height:1.6;
-  max-width:34ch;
-}
-.proof-note{
-  margin-top:16px;
-  padding:12px 14px;
-  border-radius:18px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.08);
-  color:#fff5e7;
-  font-size:13px;
-}
-.metrics{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:12px;
-  margin-bottom:18px;
-}
-.metric{
-  padding:20px;
-}
-.metric-label{
-  color:var(--muted);
-  font:600 11px/1.4 "IBM Plex Mono",monospace;
-  letter-spacing:.18em;
-  text-transform:uppercase;
-  margin-bottom:10px;
-}
-.metric-value{
-  font-family:"Anton",sans-serif;
-  font-size:clamp(2.1rem,5vw,3rem);
-  line-height:1;
-  letter-spacing:.03em;
-}
-.metric-note{
-  margin-top:10px;
-  font-size:14px;
-  color:#473f39;
-}
-.content{
-  display:grid;
-  grid-template-columns:380px 1fr;
-  gap:18px;
-}
-.form-panel{
-  padding:24px;
-  align-self:start;
-  position:sticky;
-  top:18px;
-}
-.panel-title{
-  margin:0 0 6px;
-  font-family:"Anton",sans-serif;
-  font-size:1.7rem;
-  letter-spacing:.04em;
-}
-.panel-subtitle{
-  margin:0 0 22px;
-  color:var(--muted);
-  font-size:14px;
+.auth-title{font-size:clamp(2.2rem,8vw,4rem)}
+.auth-text,.hero-text,.muted{
+  color:#4b433d;
   line-height:1.7;
+  font-size:14px;
 }
-.form-grid{
+.auth-form,.form-grid{
   display:grid;
   gap:14px;
+  margin-top:22px;
 }
 label{
   display:grid;
@@ -216,53 +95,10 @@ input,textarea,select{
   font:500 14px/1.4 "Manrope",sans-serif;
   color:var(--ink);
 }
-textarea{
-  min-height:110px;
-  resize:vertical;
-}
+textarea{min-height:110px;resize:vertical}
 input:focus,textarea:focus,select:focus{
   outline:2px solid rgba(202,90,46,.18);
   border-color:rgba(202,90,46,.44);
-}
-.button-row{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.avatar{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  object-fit:cover;
-  background:linear-gradient(135deg,#d9d1c7,#f4efe7);
-  border:1px solid rgba(22,21,21,.1);
-  flex-shrink:0;
-}
-.avatar-name{
-  font-size:14px;
-  font-weight:800;
-}
-.avatar-tag{
-  color:var(--muted);
-  font-size:12px;
-}
-.owner-line{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-bottom:14px;
-}
-.owner-text{
-  display:grid;
-  gap:2px;
-}
-.owner-name{
-  font-size:14px;
-  font-weight:800;
-}
-.owner-role{
-  color:var(--muted);
-  font-size:12px;
 }
 button{
   border:0;
@@ -290,25 +126,144 @@ button{
 }
 .status-box.error{color:var(--danger)}
 .status-box.success{color:var(--ok)}
-.board{
-  display:grid;
-  gap:18px;
-}
-.toolbar{
-  padding:22px;
-}
-.toolbar-row{
+
+.page{max-width:1320px;margin:0 auto;padding:28px 18px 64px}
+.session-bar{
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:12px;
+  padding:14px 18px;
+  margin-bottom:18px;
+}
+.session-info{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.avatar{
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid rgba(22,21,21,.1);
+  background:linear-gradient(135deg,#d9d1c7,#f4efe7);
+  flex-shrink:0;
+}
+.hero{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:18px;
+  align-items:stretch;
+  margin-bottom:18px;
+}
+.hero-copy,.hero-proof,.form-panel,.toolbar,.list-panel,.timeline{padding:22px}
+.hero-title{
+  margin:12px 0 10px;
+  font-size:clamp(2rem,4vw,3rem);
+}
+.hero-points{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-top:16px;
+}
+.chip{
+  display:flex;
+  align-items:center;
+  min-height:78px;
+  border:1px solid rgba(22,21,21,.08);
+  border-radius:20px;
+  padding:12px 14px;
+  background:#fff;
+  font:600 11px/1.5 "IBM Plex Mono",monospace;
+  letter-spacing:.03em;
+  color:#342d28;
+}
+.hero-proof{
+  background:linear-gradient(145deg, rgba(22,21,21,.95), rgba(56,41,29,.96));
+  color:#f8efe6;
+  position:relative;
+  overflow:hidden;
+}
+.hero-proof::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(120deg, transparent 0 34%, rgba(243,183,100,.14) 45%, transparent 60%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 36px);
+  pointer-events:none;
+}
+.proof-box{position:relative;z-index:1}
+.proof-title{
+  margin:12px 0 10px;
+  font-family:"Anton",sans-serif;
+  font-size:clamp(2rem,4vw,3rem);
+  line-height:1;
+}
+.proof-text{color:rgba(248,239,230,.82);line-height:1.7;font-size:14px}
+.proof-note{
+  margin-top:16px;
+  padding:12px 14px;
+  border-radius:18px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:13px;
+}
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+.metric{padding:20px}
+.metric-label{
+  color:var(--muted);
+  font:600 11px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.metric-value{
+  font-family:"Anton",sans-serif;
+  font-size:clamp(2.1rem,5vw,3rem);
+  line-height:1;
+}
+.metric-note{margin-top:10px;font-size:14px;color:#473f39}
+.content{
+  display:grid;
+  grid-template-columns:380px 1fr;
+  gap:18px;
+}
+.form-panel{
+  align-self:start;
+  position:sticky;
+  top:18px;
+}
+.panel-title{
+  font-family:"Anton",sans-serif;
+  font-size:1.7rem;
+  letter-spacing:.04em;
+}
+.owner-current{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(22,21,21,.08);
+  background:#fff;
+}
+.board{display:grid;gap:18px}
+.toolbar-row,.list-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
   gap:14px;
   flex-wrap:wrap;
 }
-.filters{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
+.filters,.button-row{display:flex;gap:10px;flex-wrap:wrap}
 .filter{
   border:1px solid var(--line);
   border-radius:999px;
@@ -320,30 +275,8 @@ button{
   cursor:pointer;
   color:#4c433d;
 }
-.filter.active{
-  background:#1b1816;
-  color:#fff;
-  border-color:#1b1816;
-}
-.list-panel{
-  padding:22px;
-}
-.list-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  gap:14px;
-  margin-bottom:18px;
-  flex-wrap:wrap;
-}
-.list-note{
-  color:var(--muted);
-  font-size:14px;
-}
-.task-list{
-  display:grid;
-  gap:12px;
-}
+.filter.active{background:#1b1816;color:#fff;border-color:#1b1816}
+.task-list,.timeline-list{display:grid;gap:12px}
 .task{
   border:1px solid rgba(22,21,21,.1);
   border-radius:24px;
@@ -357,23 +290,10 @@ button{
   align-items:flex-start;
   margin-bottom:14px;
 }
-.task-title{
-  margin:0;
-  font-size:21px;
-  line-height:1.3;
-}
-.task-desc{
-  margin:8px 0 0;
-  color:#4c443e;
-  font-size:14px;
-  line-height:1.7;
-}
-.badges{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
+.task-title{font-size:21px;line-height:1.3}
+.task-desc{margin:8px 0 0;color:#4c443e;font-size:14px;line-height:1.7}
+.badges,.task-actions{display:flex;gap:8px;flex-wrap:wrap}
+.badges{margin-top:12px}
 .badge{
   display:inline-flex;
   align-items:center;
@@ -387,6 +307,15 @@ button{
 .badge.pending{background:rgba(50,90,155,.12);color:var(--cold)}
 .badge.overdue{background:rgba(179,56,44,.12);color:var(--danger)}
 .badge.done{background:rgba(45,140,87,.12);color:var(--ok)}
+.owner-line{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+.owner-text{display:grid;gap:2px}
+.owner-name{font-size:14px;font-weight:800}
+.owner-role{color:var(--muted);font-size:12px}
 .task-grid{
   display:grid;
   grid-template-columns:repeat(4,minmax(0,1fr));
@@ -406,18 +335,7 @@ button{
   text-transform:uppercase;
   margin-bottom:6px;
 }
-.cell-value{
-  font-size:14px;
-  line-height:1.6;
-  color:#2b2520;
-  word-break:break-word;
-}
-.task-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:14px;
-}
+.cell-value{font-size:14px;line-height:1.6;color:#2b2520;word-break:break-word}
 .task-btn{
   padding:11px 14px;
   border-radius:14px;
@@ -425,14 +343,16 @@ button{
   text-transform:uppercase;
   letter-spacing:.1em;
 }
-.task-btn.complete{
-  background:#1f7d4d;
-  color:#fff;
-}
-.task-btn.reopen{
-  background:#fff;
-  color:var(--ink);
-  border:1px solid var(--line);
+.task-btn.complete{background:#1f7d4d;color:#fff}
+.task-btn.reopen{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.task-lock{
+  padding:11px 14px;
+  border-radius:14px;
+  background:rgba(22,21,21,.06);
+  color:var(--muted);
+  font:700 11px/1.4 "IBM Plex Mono",monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
 }
 .empty{
   border:1px dashed rgba(22,21,21,.16);
@@ -444,10 +364,6 @@ button{
 }
 .timeline{
   padding:22px;
-}
-.timeline-list{
-  display:grid;
-  gap:10px;
 }
 .timeline-item{
   display:grid;
@@ -466,63 +382,87 @@ button{
   background:var(--accent);
   box-shadow:0 0 0 5px rgba(202,90,46,.12);
 }
-.timeline-title{
-  font-size:15px;
-  font-weight:800;
-}
-.timeline-meta{
-  margin-top:4px;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.6;
-}
-.footer-note{
-  margin-top:12px;
-  color:var(--muted);
-  font-size:13px;
-}
+.timeline-title{font-size:15px;font-weight:800}
+.timeline-meta{margin-top:4px;color:var(--muted);font-size:13px;line-height:1.6}
+.footer-note{margin-top:12px;color:var(--muted);font-size:13px}
 @media (max-width:1100px){
   .hero,.content{grid-template-columns:1fr}
   .form-panel{position:static}
 }
 @media (max-width:780px){
   .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .task-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .hero-points{grid-template-columns:1fr}
+  .task-grid,.hero-points{grid-template-columns:1fr}
 }
 @media (max-width:580px){
   .page{padding:20px 14px 42px}
   .metrics{grid-template-columns:1fr}
-  .hero-copy,.hero-proof,.form-panel,.toolbar,.list-panel,.timeline{padding:18px}
-  .task-grid{grid-template-columns:1fr}
-  .task-top{flex-direction:column}
+  .task-top,.session-bar{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
 <body>
-  <div class="page">
+  <section class="auth-shell" id="authShell">
+    <div class="auth-card">
+      <div class="eyebrow">Acesso individual</div>
+      <h1 class="auth-title">Entre para ver tudo e editar so o que e seu.</h1>
+      <p class="auth-text">
+        Cada usuario entra com a propria senha. Todas as tarefas ficam visiveis, mas a edicao e a conclusao so funcionam nas tarefas criadas pelo usuario logado.
+      </p>
+      <form class="auth-form" id="loginForm">
+        <label>
+          Usuario
+          <select id="loginUser" required>
+            <option value="joao">João Pedro</option>
+            <option value="rafael">Rafael Palma</option>
+          </select>
+        </label>
+        <label>
+          Senha
+          <input id="loginPassword" type="password" placeholder="Digite sua senha" required>
+        </label>
+        <div class="button-row">
+          <button class="btn-primary" type="submit" id="loginBtn">Entrar</button>
+        </div>
+        <div class="status-box" id="loginStatus"></div>
+      </form>
+    </div>
+  </section>
+
+  <div class="page hidden" id="appShell">
+    <section class="panel session-bar">
+      <div class="session-info">
+        <img class="avatar" id="sessionAvatar" alt="Avatar do usuario">
+        <div>
+          <div class="eyebrow" style="margin-bottom:8px;">Sessao ativa</div>
+          <div id="sessionName" style="font-size:18px;font-weight:800;">--</div>
+          <div class="muted">Voce ve todas as tarefas, mas edita so as suas.</div>
+        </div>
+      </div>
+      <button class="btn-secondary" type="button" id="logoutBtn">Sair</button>
+    </section>
+
     <section class="hero">
       <div class="panel hero-copy">
         <div class="eyebrow">Checklist com prova</div>
-        <h1>Tarefas com prazo claro e atraso comprovado.</h1>
+        <h1 class="hero-title">Tarefas com prazo claro e dono identificado.</h1>
         <p class="hero-text">
-          Cadastre a tarefa, escolha o responsavel e acompanhe o prazo. Se vencer sem conclusao, o painel destaca na hora. Se concluir, o horario fica registrado.
+          Cada tarefa nasce com o usuario logado. Assim voce acompanha tudo em um lugar so, mas a API so deixa editar ou concluir o que realmente foi criado por voce.
         </p>
         <div class="hero-points">
-          <span class="chip">Criada com data e hora.</span>
-          <span class="chip">Prazo salvo no banco.</span>
-          <span class="chip">Conclusao e atraso ficam visiveis.</span>
+          <span class="chip">Login separado para cada pessoa.</span>
+          <span class="chip">Criacao vinculada ao dono.</span>
+          <span class="chip">Edicao bloqueada para terceiros.</span>
         </div>
       </div>
       <div class="panel hero-proof">
         <div class="proof-box">
-          <div class="proof-label">Uso pratico</div>
-          <div class="proof-title">Se atrasar, o painel mostra.</div>
+          <div class="eyebrow" style="color:#f3b764;">Uso pratico</div>
+          <div class="proof-title">Todo mundo acompanha. So o dono altera.</div>
           <p class="proof-text">
-            Cada item exibe criacao, prazo, status atual e momento da conclusao. Se passar da data sem finalizar, entra como atrasado automaticamente.
+            O painel continua completo para os dois, mas os botoes de acao so aparecem de verdade para quem criou a tarefa. Isso evita mudanca indevida e deixa o historico mais confiavel.
           </p>
           <div class="proof-note">
-            Use observacoes para registrar o combinado da reuniao ou entrega.
+            A tarefa gravada leva o dono e a data, entao fica claro quem criou e quem pode mexer.
           </div>
         </div>
       </div>
@@ -554,22 +494,22 @@ button{
     <section class="content">
       <aside class="panel form-panel">
         <h2 class="panel-title">Nova tarefa</h2>
-        <p class="panel-subtitle">
-          Preencha os dados abaixo para salvar no Supabase. O ideal e cadastrar cada combinacao com titulo claro, prazo e nome do responsavel.
+        <p class="muted">
+          O responsavel nao precisa mais ser escolhido manualmente. A tarefa sera criada com o usuario que estiver logado nesta sessao.
         </p>
+
+        <div class="owner-current" style="margin:18px 0 22px;">
+          <img class="avatar" id="ownerCurrentAvatar" alt="Avatar do responsavel atual">
+          <div>
+            <div class="metric-label" style="margin:0 0 4px;">Responsavel atual</div>
+            <div id="ownerCurrentName" style="font-size:16px;font-weight:800;">--</div>
+          </div>
+        </div>
 
         <form id="taskForm" class="form-grid">
           <label>
             Titulo da tarefa
             <input id="titleInput" name="title" type="text" maxlength="140" placeholder="Ex.: Enviar contrato assinado" required>
-          </label>
-
-          <label>
-            Responsavel
-            <select id="ownerInput" name="owner_name" required>
-              <option value="João Pedro">João Pedro</option>
-              <option value="Rafael Palma">Rafael Palma</option>
-            </select>
           </label>
 
           <label>
@@ -595,10 +535,11 @@ button{
           <div class="toolbar-row">
             <div>
               <h2 class="panel-title" style="margin-bottom:8px;">Painel de acompanhamento</h2>
-              <div class="list-note" id="lastSync">Aguardando leitura inicial...</div>
+              <div class="muted" id="lastSync">Aguardando leitura inicial...</div>
             </div>
             <div class="filters" id="filters">
               <button class="filter active" data-filter="all" type="button">Todas</button>
+              <button class="filter" data-filter="mine" type="button">Minhas</button>
               <button class="filter" data-filter="pending" type="button">Pendentes</button>
               <button class="filter" data-filter="overdue" type="button">Atrasadas</button>
               <button class="filter" data-filter="completed" type="button">Concluidas</button>
@@ -610,7 +551,7 @@ button{
           <div class="list-head">
             <div>
               <h2 class="panel-title" style="margin-bottom:8px;">Tarefas</h2>
-              <div class="list-note" id="listSummary">Carregando tarefas...</div>
+              <div class="muted" id="listSummary">Carregando tarefas...</div>
             </div>
           </div>
           <div class="task-list" id="taskList"></div>
@@ -620,7 +561,7 @@ button{
           <div class="list-head">
             <div>
               <h2 class="panel-title" style="margin-bottom:8px;">Linha do tempo</h2>
-              <div class="list-note">Ultimos registros criados ou concluidos.</div>
+              <div class="muted">Ultimos registros criados ou concluidos.</div>
             </div>
           </div>
           <div class="timeline-list" id="timelineList"></div>
@@ -633,9 +574,27 @@ button{
   </div>
 
 <script>
+const OWNER_PHOTOS = {
+  "João Pedro": "/EU.jfif",
+  "JoÃ£o Pedro": "/EU.jfif",
+  "Rafael Palma": "/xadrez.jfif"
+};
+
+const authShell = document.getElementById("authShell");
+const appShell = document.getElementById("appShell");
+const loginForm = document.getElementById("loginForm");
+const loginUser = document.getElementById("loginUser");
+const loginPassword = document.getElementById("loginPassword");
+const loginBtn = document.getElementById("loginBtn");
+const loginStatus = document.getElementById("loginStatus");
+const logoutBtn = document.getElementById("logoutBtn");
+const sessionName = document.getElementById("sessionName");
+const sessionAvatar = document.getElementById("sessionAvatar");
+const ownerCurrentName = document.getElementById("ownerCurrentName");
+const ownerCurrentAvatar = document.getElementById("ownerCurrentAvatar");
+
 const taskForm = document.getElementById("taskForm");
 const titleInput = document.getElementById("titleInput");
-const ownerInput = document.getElementById("ownerInput");
 const dueDateInput = document.getElementById("dueDateInput");
 const descriptionInput = document.getElementById("descriptionInput");
 const formStatus = document.getElementById("formStatus");
@@ -653,17 +612,7 @@ const metricCompleted = document.getElementById("metricCompleted");
 
 let currentFilter = "all";
 let currentTasks = [];
-const OWNER_PHOTOS = {
-  "João Pedro": "/EU.jfif",
-  "JoÃ£o Pedro": "/EU.jfif",
-  "Rafael Palma": "/xadrez.jfif"
-};
-
-function setDefaultDueDate() {
-  const now = new Date();
-  now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60);
-  dueDateInput.value = now.toISOString().slice(0, 16);
-}
+let currentUser = null;
 
 function escapeHtml(value) {
   return String(value || "")
@@ -679,10 +628,6 @@ function defaultAvatar(label) {
   return `https://placehold.co/92x92/F3EFE6/2B2520?text=${text}`;
 }
 
-function photoKey(name) {
-  return name === "Rafael Palma" ? "owner-photo-rafael" : "owner-photo-joao";
-}
-
 function ownerPhoto(name) {
   return OWNER_PHOTOS[name] || defaultAvatar(name);
 }
@@ -695,6 +640,56 @@ function formatDate(value) {
     dateStyle: "short",
     timeStyle: "short"
   }).format(date);
+}
+
+function setDefaultDueDate() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset() + 60);
+  dueDateInput.value = now.toISOString().slice(0, 16);
+}
+
+function setSession(user) {
+  currentUser = user;
+  if (!user) {
+    authShell.classList.remove("hidden");
+    appShell.classList.add("hidden");
+    return;
+  }
+
+  sessionName.textContent = user.name;
+  sessionAvatar.src = ownerPhoto(user.name);
+  ownerCurrentName.textContent = user.name;
+  ownerCurrentAvatar.src = ownerPhoto(user.name);
+
+  authShell.classList.add("hidden");
+  appShell.classList.remove("hidden");
+}
+
+async function checkSession() {
+  const response = await fetch("/api/auth");
+  if (!response.ok) {
+    setSession(null);
+    return false;
+  }
+
+  const payload = await response.json();
+  setSession(payload.user);
+  return true;
+}
+
+function updateMetrics(summary) {
+  metricTotal.textContent = summary.total || 0;
+  metricPending.textContent = summary.pending || 0;
+  metricOverdue.textContent = summary.overdue || 0;
+  metricCompleted.textContent = summary.completed || 0;
+}
+
+function filteredTasks(tasks) {
+  if (currentFilter === "mine") return tasks.filter((task) => task.owner_user_key === currentUser?.key);
+  if (currentFilter === "pending") return tasks.filter((task) => !task.is_completed && !task.is_overdue);
+  if (currentFilter === "overdue") return tasks.filter((task) => task.is_overdue);
+  if (currentFilter === "completed") return tasks.filter((task) => task.is_completed);
+  return tasks;
 }
 
 function statusLabel(task) {
@@ -719,20 +714,6 @@ function relativeInfo(task) {
   return "Prazo em " + formatDate(task.due_date);
 }
 
-function updateMetrics(summary) {
-  metricTotal.textContent = summary.total || 0;
-  metricPending.textContent = summary.pending || 0;
-  metricOverdue.textContent = summary.overdue || 0;
-  metricCompleted.textContent = summary.completed || 0;
-}
-
-function filteredTasks(tasks) {
-  if (currentFilter === "pending") return tasks.filter((task) => !task.is_completed && !task.is_overdue);
-  if (currentFilter === "overdue") return tasks.filter((task) => task.is_overdue);
-  if (currentFilter === "completed") return tasks.filter((task) => task.is_completed);
-  return tasks;
-}
-
 function renderTasks(tasks) {
   const visibleTasks = filteredTasks(tasks);
   if (!visibleTasks.length) {
@@ -741,9 +722,12 @@ function renderTasks(tasks) {
   }
 
   taskList.innerHTML = visibleTasks.map((task) => {
-    const button = task.is_completed
-      ? `<button class="task-btn reopen" type="button" data-action="reopen" data-id="${task.id}">Reabrir</button>`
-      : `<button class="task-btn complete" type="button" data-action="complete" data-id="${task.id}">Marcar concluida</button>`;
+    let actionHtml = '<div class="task-lock">So o dono pode editar</div>';
+    if (task.can_edit) {
+      actionHtml = task.is_completed
+        ? `<button class="task-btn reopen" type="button" data-action="reopen" data-id="${task.id}">Reabrir</button>`
+        : `<button class="task-btn complete" type="button" data-action="complete" data-id="${task.id}">Marcar concluida</button>`;
+    }
 
     return `
       <article class="task">
@@ -753,16 +737,16 @@ function renderTasks(tasks) {
             <p class="task-desc">${escapeHtml(task.description || "Sem observacoes registradas.")}</p>
             <div class="badges">
               <span class="badge ${statusClass(task)}">${statusLabel(task)}</span>
-              <span class="badge pending">Responsavel</span>
+              <span class="badge pending">${task.can_edit ? "Sua tarefa" : "De outro usuario"}</span>
             </div>
           </div>
-          <div class="list-note">${relativeInfo(task)}</div>
+          <div class="muted">${relativeInfo(task)}</div>
         </div>
         <div class="owner-line">
           <img class="avatar" src="${escapeHtml(ownerPhoto(task.owner_name || ""))}" alt="${escapeHtml(task.owner_name || "Responsavel")}">
           <div class="owner-text">
             <div class="owner-name">${escapeHtml(task.owner_name || "Sem responsavel")}</div>
-            <div class="owner-role">Foto puxada da raiz do projeto</div>
+            <div class="owner-role">${task.can_edit ? "Voce pode editar esta tarefa" : "Visualizacao liberada, edicao bloqueada"}</div>
           </div>
         </div>
         <div class="task-grid">
@@ -783,8 +767,8 @@ function renderTasks(tasks) {
             <div class="cell-value">${statusLabel(task)}</div>
           </div>
         </div>
-        <div class="task-actions">
-          ${button}
+        <div class="task-actions" style="margin-top:14px;">
+          ${actionHtml}
         </div>
       </article>
     `;
@@ -810,12 +794,12 @@ function renderTimeline(items) {
 
 function applyPayload(payload) {
   currentTasks = payload.tasks || [];
+  currentUser = payload.currentUser || currentUser;
+  setSession(currentUser);
   updateMetrics(payload.summary || {});
   renderTasks(currentTasks);
   renderTimeline(payload.timeline || []);
-
-  const totalVisible = filteredTasks(currentTasks).length;
-  listSummary.textContent = `${totalVisible} tarefa(s) exibida(s) no filtro atual.`;
+  listSummary.textContent = `${filteredTasks(currentTasks).length} tarefa(s) exibida(s) no filtro atual.`;
   lastSync.textContent = `Ultima sincronizacao: ${formatDate(new Date().toISOString())}`;
 }
 
@@ -825,10 +809,13 @@ async function fetchDashboard() {
   const payload = await response.json();
 
   if (!response.ok) {
-    const message = payload && payload.error ? payload.error : "Nao foi possivel carregar as tarefas.";
-    taskList.innerHTML = `<div class="empty">${escapeHtml(message)}</div>`;
+    if (response.status === 401) {
+      setSession(null);
+      taskList.innerHTML = '<div class="empty">Sua sessao expirou. Faca login novamente.</div>';
+      return;
+    }
+    taskList.innerHTML = `<div class="empty">${escapeHtml(payload.error || "Nao foi possivel carregar as tarefas.")}</div>`;
     timelineList.innerHTML = '<div class="empty">Sem historico disponivel.</div>';
-    listSummary.textContent = "Falha ao atualizar a lista.";
     return;
   }
 
@@ -842,13 +829,12 @@ async function submitTask(event) {
 
   const body = {
     title: titleInput.value.trim(),
-    owner_name: ownerInput.value.trim(),
     due_date: dueDateInput.value,
     description: descriptionInput.value.trim()
   };
 
-  if (!body.title || !body.owner_name || !body.due_date) {
-    formStatus.textContent = "Preencha titulo, responsavel e prazo.";
+  if (!body.title || !body.due_date) {
+    formStatus.textContent = "Preencha titulo e prazo.";
     formStatus.classList.add("error");
     return;
   }
@@ -897,6 +883,47 @@ async function updateTaskStatus(id, action) {
   applyPayload(payload);
 }
 
+loginForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  loginStatus.textContent = "";
+  loginStatus.className = "status-box";
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Entrando...";
+
+  try {
+    const response = await fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: loginUser.value,
+        password: loginPassword.value
+      })
+    });
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload.error || "Nao foi possivel entrar.");
+    }
+
+    loginPassword.value = "";
+    setSession(payload.user);
+    await fetchDashboard();
+  } catch (error) {
+    loginStatus.textContent = error.message || "Falha no login.";
+    loginStatus.classList.add("error");
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Entrar";
+  }
+});
+
+logoutBtn.addEventListener("click", async () => {
+  await fetch("/api/auth", { method: "DELETE" });
+  currentTasks = [];
+  currentUser = null;
+  setSession(null);
+});
+
 taskForm.addEventListener("submit", submitTask);
 refreshBtn.addEventListener("click", fetchDashboard);
 
@@ -925,7 +952,11 @@ taskList.addEventListener("click", async (event) => {
 });
 
 setDefaultDueDate();
-fetchDashboard();
+checkSession().then((loggedIn) => {
+  if (loggedIn) {
+    fetchDashboard();
+  }
+});
 </script>
 </body>
 </html>
