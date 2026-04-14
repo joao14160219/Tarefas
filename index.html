@@ -509,7 +509,7 @@ button{
       <aside class="panel form-panel">
         <h2 class="panel-title">Nova tarefa</h2>
         <p class="muted">
-          O responsavel nao precisa mais ser escolhido manualmente. A tarefa sera criada com o usuario que estiver logado nesta sessao.
+          Voce cria a tarefa na sua conta e escolhe para quem ela sera designada. O prazo fica travado para quem nao criou.
         </p>
 
         <div class="owner-current" style="margin:18px 0 22px;">
@@ -524,6 +524,14 @@ button{
           <label>
             Titulo da tarefa
             <input id="titleInput" name="title" type="text" maxlength="140" placeholder="Ex.: Enviar contrato assinado" required>
+          </label>
+
+          <label>
+            Designada para
+            <select id="ownerSelect" required>
+              <option value="joao">João Pedro</option>
+              <option value="rafael">Rafael Palma</option>
+            </select>
           </label>
 
           <label>
@@ -640,6 +648,7 @@ const ownerCurrentAvatar = document.getElementById("ownerCurrentAvatar");
 
 const taskForm = document.getElementById("taskForm");
 const titleInput = document.getElementById("titleInput");
+const ownerSelect = document.getElementById("ownerSelect");
 const dueDateInput = document.getElementById("dueDateInput");
 const descriptionInput = document.getElementById("descriptionInput");
 const formStatus = document.getElementById("formStatus");
@@ -684,6 +693,13 @@ function defaultAvatar(label) {
 
 function ownerPhoto(name) {
   return OWNER_PHOTOS[name] || defaultAvatar(name);
+}
+
+function ownerMetaFromKey(key) {
+  if (key === "rafael") {
+    return { key: "rafael", name: "Rafael Palma" };
+  }
+  return { key: "joao", name: "João Pedro" };
 }
 
 function formatDate(value) {
@@ -801,7 +817,7 @@ function renderTasks(tasks) {
             <p class="task-desc">${escapeHtml(task.description || "Sem observacoes registradas.")}</p>
             <div class="badges">
               <span class="badge ${statusClass(task)}">${statusLabel(task)}</span>
-              <span class="badge pending">${task.can_edit ? "Sua tarefa" : "De outro usuario"}</span>
+              <span class="badge pending">${task.can_edit ? "Criada por voce" : "Criada por outro usuario"}</span>
             </div>
           </div>
           <div class="muted">${relativeInfo(task)}</div>
@@ -809,8 +825,8 @@ function renderTasks(tasks) {
         <div class="owner-line">
           <img class="avatar" src="${escapeHtml(ownerPhoto(task.owner_name || ""))}" alt="${escapeHtml(task.owner_name || "Responsavel")}">
           <div class="owner-text">
-            <div class="owner-name">${escapeHtml(task.owner_name || "Sem responsavel")}</div>
-            <div class="owner-role">${task.can_edit ? "Voce pode editar esta tarefa" : "Visualizacao liberada, edicao bloqueada"}</div>
+            <div class="owner-name">Designada para ${escapeHtml(task.owner_name || "Sem responsavel")}</div>
+            <div class="owner-role">Criada por ${escapeHtml(task.creator_name || "Sem registro")} • ${task.can_edit ? "Voce pode editar" : "Edicao bloqueada"}</div>
           </div>
         </div>
         <div class="task-grid">
@@ -893,12 +909,14 @@ async function submitTask(event) {
 
   const body = {
     title: titleInput.value.trim(),
+    owner_user_key: ownerMetaFromKey(ownerSelect.value).key,
+    owner_name: ownerMetaFromKey(ownerSelect.value).name,
     due_date: dueDateInput.value,
     description: descriptionInput.value.trim()
   };
 
-  if (!body.title || !body.due_date) {
-    formStatus.textContent = "Preencha titulo e prazo.";
+  if (!body.title || !body.due_date || !body.owner_user_key) {
+    formStatus.textContent = "Preencha titulo, responsavel e prazo.";
     formStatus.classList.add("error");
     return;
   }
