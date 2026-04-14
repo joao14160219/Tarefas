@@ -229,6 +229,41 @@ input:focus,textarea:focus,select:focus{
   gap:10px;
   flex-wrap:wrap;
 }
+.avatar{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  object-fit:cover;
+  background:linear-gradient(135deg,#d9d1c7,#f4efe7);
+  border:1px solid rgba(22,21,21,.1);
+  flex-shrink:0;
+}
+.avatar-name{
+  font-size:14px;
+  font-weight:800;
+}
+.avatar-tag{
+  color:var(--muted);
+  font-size:12px;
+}
+.owner-line{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:14px;
+}
+.owner-text{
+  display:grid;
+  gap:2px;
+}
+.owner-name{
+  font-size:14px;
+  font-weight:800;
+}
+.owner-role{
+  color:var(--muted);
+  font-size:12px;
+}
 button{
   border:0;
   border-radius:16px;
@@ -618,6 +653,11 @@ const metricCompleted = document.getElementById("metricCompleted");
 
 let currentFilter = "all";
 let currentTasks = [];
+const OWNER_PHOTOS = {
+  "João Pedro": "/EU.jfif",
+  "JoÃ£o Pedro": "/EU.jfif",
+  "Rafael Palma": "/xadrez.jfif"
+};
 
 function setDefaultDueDate() {
   const now = new Date();
@@ -632,6 +672,19 @@ function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+function defaultAvatar(label) {
+  const text = label === "Rafael Palma" ? "RP" : "JP";
+  return `https://placehold.co/92x92/F3EFE6/2B2520?text=${text}`;
+}
+
+function photoKey(name) {
+  return name === "Rafael Palma" ? "owner-photo-rafael" : "owner-photo-joao";
+}
+
+function ownerPhoto(name) {
+  return OWNER_PHOTOS[name] || defaultAvatar(name);
 }
 
 function formatDate(value) {
@@ -700,10 +753,17 @@ function renderTasks(tasks) {
             <p class="task-desc">${escapeHtml(task.description || "Sem observacoes registradas.")}</p>
             <div class="badges">
               <span class="badge ${statusClass(task)}">${statusLabel(task)}</span>
-              <span class="badge pending">${escapeHtml(task.owner_name || "Sem responsavel")}</span>
+              <span class="badge pending">Responsavel</span>
             </div>
           </div>
           <div class="list-note">${relativeInfo(task)}</div>
+        </div>
+        <div class="owner-line">
+          <img class="avatar" src="${escapeHtml(ownerPhoto(task.owner_name || ""))}" alt="${escapeHtml(task.owner_name || "Responsavel")}">
+          <div class="owner-text">
+            <div class="owner-name">${escapeHtml(task.owner_name || "Sem responsavel")}</div>
+            <div class="owner-role">Foto puxada da raiz do projeto</div>
+          </div>
         </div>
         <div class="task-grid">
           <div class="cell">
